@@ -1,11 +1,18 @@
-  SELECT DISTINCT
+    SELECT DISTINCT
          ord.order_id,
          ord.order_user_no,
+         CASE
+            WHEN ord.emp_at IS TRUE THEN '임직원'
+            ELSE '협력사/방문자'
+         END
+            AS 'emp_at',
          emp.user_name,
          emp.position_name,
          emp.duty_name,
-         paycd.code_name                                'pay_mth',
-         ordcd.code_name                                'order_mth',
+         emp.enter_name,
+         emp.birth_ymd,
+         paycd.code_name                                AS 'pay_mth',
+         ordcd.code_name                                AS 'order_mth',
          hist.prd_order_count,
          hist.prd_order_price,
          cate.prd_cate_name,
@@ -17,7 +24,7 @@
                   FROM kafe_option tmp
                  WHERE find_in_set(tmp.option_id, hist.option))
             ELSE
-              '' 
+               ''
          END
             AS 'prd_option',
          date_format(ord.order_date, '%Y-%m-%d %H:%i:%s') AS 'order_date'
@@ -29,4 +36,4 @@
          JOIN code paycd ON (paycd.code_no = ord.pay_mth)
          JOIN code ordcd ON (ordcd.code_no = ord.order_mth)
     WHERE order_date > :sql_last_value
-ORDER BY order_date ASC, order_id ASC
+    ORDER BY order_date ASC, order_id ASC
